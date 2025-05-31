@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+radon
+flake8
+openai
+pydantic
+python-multipart
