@@ -1,29 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Code Reviewer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Code Reviewer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 900px;
+      margin: 2rem auto;
+      background: #f9fafb;
+      color: #333;
+    }
+    h1 {
+      color: #222;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+    }
+    input[type="file"] {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 400px;
+    }
+    button {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #4338ca;
+    }
+    #results {
+      margin-top: 2rem;
+      white-space: pre-wrap;
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 1rem;
+      border-radius: 6px;
+      font-family: monospace;
+      max-height: 480px;
+      overflow-y: auto;
+    }
+  </style>
 </head>
 <body>
-    <h1>AI Code Reviewer</h1>
-    <form id="upload-form" enctype="multipart/form-data">
-        <input type="file" name="files" multiple accept=".py" required>
-        <button type="submit">Upload</button>
-    </form>
-    <div id="results"></div>
+  <h1>AI Code Reviewer</h1>
+  <form id="upload-form" enctype="multipart/form-data">
+    <input type="file" name="files" multiple accept=".py" required />
+    <button type="submit">Upload and Analyze</button>
+  </form>
+  <pre id="results" aria-live="polite" aria-atomic="true"></pre>
 
-    <script>
-        document.getElementById('upload-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const response = await fetch('/upload/', {
-                method: 'POST',
-                body: formData
-            });
-            const results = await response.json();
-            document.getElementById('results').innerText = JSON.stringify(results, null, 2);
-        };
-    </script>
+  <script>
+    document.getElementById('upload-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const resultsElem = document.getElementById('results');
+      resultsElem.textContent = 'Uploading and analyzing... please wait.';
+
+      const formData = new FormData(event.target);
+
+      try {
+        const response = await fetch('/upload/', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          resultsElem.textContent = 'Error from server: ' + errorText;
+          return;
+        }
+
+        const data = await response.json();
+        // Pretty print JSON results for user-friendly display
+        resultsElem.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        resultsElem.textContent = 'Network or server error: ' + error.message;
+      }
+    });
+  </script>
 </body>
 </html>
+

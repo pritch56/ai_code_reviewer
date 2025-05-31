@@ -1,10 +1,10 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from services.complexity import analyze_complexity
-from services.linting import run_linting
-from services.ast_analysis import analyze_ast
-from services.ai_review import generate_ai_review
+from .services.complexity import analyze_complexity
+from .services.linting import run_linting
+from .services.ast_analysis import analyze_ast
+from .services.ai_review import generate_ai_review
 
 app = FastAPI()
 
